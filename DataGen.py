@@ -63,12 +63,12 @@ def getNoisey():
 def getNoisey1():
 #    IDcode=IDcheck(ID)
     spike = spikeWave2(5)*7.5
-   
+
     # data=np.zeros(600)
     # data[70:130]+=spike
     spike-=70
     nn = np.random.normal(0,10,600)
-    
+
     return spike+nn
 
 
@@ -77,11 +77,11 @@ def getNoisey1():
 
 
 def getSpike(ID):
-    
+
     if len(ID) != 9:
         print("you have not entered your student number correctly, ensure it has only 9 characters, then run this again")
         return
-    
+
     IDcode=IDcheck(ID)
     spike = spikeWave(15)
     sampleRate = 10000
@@ -95,11 +95,11 @@ def getSpike(ID):
     poiss = np.random.exponential(SponRateinSP,numberOfStim)
     timeList =np.cumsum(poiss)
     timeList = [i for i in timeList if i<duration*sampleRate]
-    
+
     for t in timeList:
         t=int(round(t))
         data[t:t+60]+=spike
-  
+
     return data
 
 
@@ -108,10 +108,10 @@ def getCircadian(ID):
         print("you have not entered your student number correctly, ensure it has only 9 characters, then run this again")
         return
     IDcode=IDcheck(ID)
-    
-    
+
+
     for i in range(35):
-        
+
         if i<(10+IDcode[-1]+IDcode[-2]):
             sponRate = 100
             duration = 720
@@ -120,7 +120,7 @@ def getCircadian(ID):
             timeList1 =np.cumsum(poiss)
             timeList1 = np.asarray([i for i in timeList1 if i<duration])
             timeList1/=60
-            
+
             sponRate = 5
             duration = 720
             numberOfStim = int(duration/sponRate)
@@ -130,7 +130,7 @@ def getCircadian(ID):
             timeList2/=60
             timeList2+=12
             timeList=np.concatenate((timeList1,timeList2),axis=0)
-        else: 
+        else:
             sponRate = 100
             duration = 900
             numberOfStim = int(duration/sponRate)
@@ -138,7 +138,7 @@ def getCircadian(ID):
             timeList1 =np.cumsum(poiss)
             timeList1 = np.asarray([i for i in timeList1 if i<duration])
             timeList1/=60
-            
+
             sponRate = 5
             duration = 540
             numberOfStim = int(duration/sponRate)
@@ -149,25 +149,12 @@ def getCircadian(ID):
             timeList2+=12
             timeList2+=3
             timeList=np.concatenate((timeList1,timeList2),axis=0)
-        
+
         out=str(i)
         if len(out)==1:
             out="0"+str(i)
 
         np.savetxt('Circadian data/Day_'+out+'.csv',timeList)
-    
-    # return timeList
-
-
-# for i in range(1,24):
-#     times = getCircadian()
-#     day=np.zeros(len(times))
-#     plt.plot(times,day+i,'|',color='k')
-
-# plt.title('Wheel running events')
-# plt.xlabel('Time (hrs)')
-# plt.ylabel('Days')
-# plt.xticks(np.arange(0,25,3))
 
 
 
@@ -178,11 +165,11 @@ def getDialysis(ID):
         print("you have not entered your student number correctly, ensure it has only 9 characters, then run this again")
         return
     IDcode=IDcheck(ID)
-    tt = np.arange(0,330,2)
+    tt = np.arange(0,330,1)
     data = ((IDcode[-4]+9)*10)*np.exp(1)**-(tt/((IDcode[-1]+3)*10))
-    nn = np.random.normal(0,(IDcode[-6]+8),165)
+    nn = np.random.normal(0,(IDcode[-6]+8),330)
     data+=nn
-    
+
     return data
 
 
@@ -190,10 +177,10 @@ def getDialysis(ID):
 
 def getCellSize(ID):
     if len(ID) != 9:
-        print("you have not entered your student number correctly, ensure it has only 9 characters, then run this again")        
+        print("you have not entered your student number correctly, ensure it has only 9 characters, then run this again")
         return
     IDcode=IDcheck(ID)
-    data1 = np.random.lognormal(IDcode[-3],0.55, size=int(900+IDcode[-4]**2))
+    data1 = np.random.lognormal(IDcode[-3]+1,0.55, size=int(900+IDcode[-4]**2))
     return data1
 
 
@@ -202,8 +189,8 @@ def getmRNAs(ID):
         print("you have not entered your student number correctly, ensure it has only 9 characters, then run this again")
         return
     IDcode=IDcheck(ID)
-    centre = (IDcode[-1]+55+IDcode[-2]*3)*10   
-    scale = IDcode[-1]+IDcode[-3]
+    centre = (IDcode[-1]+55+IDcode[-2]*3)*10
+    scale = IDcode[-1]+IDcode[-3]+1
     data1 = np.random.normal(centre,scale,int(900+IDcode[-4]**2))
     data2 = np.zeros((len(data1),2))
     data2[:,0]=data1[:]
@@ -219,7 +206,7 @@ def dataFolder(ID):
     for i in range(len(ID)):
         IDcode[i]=saveContents[i]
     saveList=[3,2,4,1,8,0,6,7,5]
-    saveName='ABCDEFGHI'    
+    saveName='ABCDEFGHI'
     for i in saveList:
         a= np.array([saveContents[i]],dtype='int')
         np.savetxt('Data sets/Data_'+saveName[i]+'.csv',a)
@@ -229,16 +216,3 @@ def dataFolder(ID):
     np.savetxt('Data sets/Data_K.txt',b)
 
 #%%
-# test= np.random.lognormal(7,0.55,800)
-# plt.hist(test,60)
-
-#%%
-
-# mRNAs = getmRNAs(ID)
-# plt.hist(mRNAs, 40,label=['data1','data2']);
-# plt.xlabel('Cell size µm')
-# plt.ylabel('# of obervations')
-# plt.title('Histogram of cell sizes');
-# plt.legend()
-# print("The median cell size was",format(np.median(mRNAs),".2f"))
-# stats.ttest_ind(mRNAs[:,0],mRNAs[:,1])
